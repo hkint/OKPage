@@ -2,6 +2,13 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
+// Default constants for agent settings
+const DEFAULT_AGENT_ID = 'default-general-v1';
+const DEFAULT_SYSTEM_PROMPT = "You are a helpful AI assistant. Provide concise and accurate responses.";
+const DEFAULT_TEMPERATURE = 0.7;
+const DEFAULT_MAX_TOKENS = 4096;
+const DEFAULT_TOP_P = 1.0;
+
 // Define types for store state and actions
 interface AppState {
   apiKey: string | null;
@@ -291,12 +298,6 @@ export const useAppStore = create<AppState>()(
     }
   )
 );
-
-const DEFAULT_AGENT_ID = 'default-general-v1';
-const DEFAULT_SYSTEM_PROMPT = "You are a helpful AI assistant. Provide concise and accurate responses.";
-const DEFAULT_TEMPERATURE = 0.7;
-const DEFAULT_MAX_TOKENS = 4096;
-const DEFAULT_TOP_P = 1.0;
 
 // Initial store setup logic (e.g., default agent, sync active settings)
 function initializeStore() {

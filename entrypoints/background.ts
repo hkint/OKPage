@@ -1,4 +1,5 @@
-// Assuming sendMessage, onMessage, and defineBackground are globally available in WXT context
+import { onMessage, sendMessage } from 'wxt/browser';
+// defineBackground is globally available in WXT context
 
 import { saveSetting, loadSetting } from '~/services/settingsService'; // Added loadSetting
 

@@ -18,6 +18,7 @@ export default defineConfig({
     host_permissions: ['<all_urls>'],
     action: {
       default_title: 'OKPage', // This title appears on hover
+      default_popup: '', // Explicitly disable the popup
     },
     // Configure the side panel to be opened from the action icon
     sidePanel: {

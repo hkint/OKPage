@@ -329,9 +329,7 @@ function initializeStore() {
 // Zustand's persist middleware rehydration is asynchronous.
 // We use a small timeout to ensure rehydration likely completes before our init logic.
 if (typeof window !== 'undefined') {
-  setTimeout(() => {
-    initializeStore();
-  }, 100);
+  initializeStore();
 }
 
 // Optional: Log initial state or when state changes for debugging

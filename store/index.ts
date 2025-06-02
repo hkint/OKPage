@@ -48,6 +48,10 @@ interface AppState {
   // UI Mode
   uiMode: 'sidepanel' | 'floating';
   setUiMode: (mode: 'sidepanel' | 'floating') => void;
+
+  // Export Format
+  exportFormat: 'markdown' | 'text';
+  setExportFormat: (format: 'markdown' | 'text') => void;
 }
 
 export interface ImageData {
@@ -260,6 +264,10 @@ export const useAppStore = create<AppState>()(
       // UI Mode
       uiMode: 'sidepanel', // Default to native side panel
       setUiMode: (mode) => set({ uiMode: mode }),
+
+      // Export Format
+      exportFormat: 'markdown', // Default to markdown
+      setExportFormat: (format) => set({ exportFormat: format }),
     }),
     {
       name: 'okpage-app-storage',
@@ -271,6 +279,7 @@ export const useAppStore = create<AppState>()(
         agents: state.agents,
         currentAgentId: state.currentAgentId,
         uiMode: state.uiMode, // Persist uiMode
+        exportFormat: state.exportFormat, // Persist exportFormat
         // DO NOT persist pageContext, chatHistory, currentImages, or active... settings here.
       }),
       onRehydrateStorage: () => (state, error) => {

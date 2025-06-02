@@ -91,7 +91,24 @@ const ChatView: React.FC = () => {
     if ((userInput.trim() === '' && currentImages.length === 0) || isStreaming) return;
     if (!apiKey) {
       setError("API Key is not set. Please configure it in Settings.");
-      addMessage({ id: `sys-${Date.now()}`, role: 'system', content: "API Key is not set. Cannot send message." });
+      // Add system message to chat indicating API key is not set
+      addMessage({
+        id: generateUniqueId(), // Use uuidv4 or similar for unique ID
+        role: 'system',
+        content: "API Key is not set. Please configure it in settings.",
+        timestamp: Date.now(),
+      });
+      return;
+    }
+    if (!currentAgentId) {
+      setError("No agent selected. Please select an agent to begin.");
+      // Add system message to chat indicating no agent is selected
+      addMessage({
+        id: generateUniqueId(),
+        role: 'system',
+        content: "No agent selected. Please select an agent from settings.",
+        timestamp: Date.now(),
+      });
       return;
     }
     setError(null);
@@ -305,7 +322,7 @@ const ChatView: React.FC = () => {
             className="self-end h-10 w-10" // Align with textarea bottom
           >
             {isStreaming ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <SendHorizonal className="h-5 w-5" />
             )}

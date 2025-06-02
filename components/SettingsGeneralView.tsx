@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // Added useState back
 import { useAppStore, type ChatMessage } from '~/store';
 import { Button } from '~/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
@@ -9,8 +9,8 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Languages, Download, FileText, FileCode, LayoutPanelLeft, PanelRightOpen } from 'lucide-react'; // Added LayoutPanelLeft, PanelRightOpen
 
 const SettingsGeneralView: React.FC = () => {
-  const { language, setLanguage, chatHistory, uiMode, setUiMode } = useAppStore();
-  const [exportFormat, setExportFormat] = useState<'markdown' | 'text'>('markdown');
+  const { language, setLanguage, chatHistory, uiMode, setUiMode, exportFormat, setExportFormat } = useAppStore();
+  const [exportStatusMessage, setExportStatusMessage] = useState<string | null>(null);
 
   const handleLanguageChange = (newLang: string) => {
     setLanguage(newLang);
@@ -36,10 +36,10 @@ const SettingsGeneralView: React.FC = () => {
   };
 
   const handleExportChat = () => {
+    setExportStatusMessage(null); // Clear previous message
     if (!chatHistory || chatHistory.length === 0) {
       console.warn('Chat history is empty. Nothing to export.');
-      // TODO: Show a user-facing notification/toast
-      alert('Chat history is empty.');
+      setExportStatusMessage('Chat history is empty. Nothing to export.');
       return;
     }
 
@@ -56,8 +56,7 @@ const SettingsGeneralView: React.FC = () => {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     console.log(`Chat history exported as ${exportFormat}.`);
-    // TODO: Show a success notification/toast
-    alert(`Chat history exported as ${exportFormat}.`);
+    setExportStatusMessage(`Chat history exported as ${exportFormat}.`);
   };
 
   return (
@@ -115,6 +114,11 @@ const SettingsGeneralView: React.FC = () => {
               Export
             </Button>
           </div>
+          {exportStatusMessage && (
+            <p className={`text-sm mt-2 ${exportStatusMessage.startsWith('Chat history is empty') ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
+              {exportStatusMessage}
+            </p>
+          )}
            <p className="text-xs text-muted-foreground">
             Download your current chat conversation.
           </p>

@@ -29,11 +29,14 @@ const SettingsModelView: React.FC = () => {
 
   const [currentApiKey, setCurrentApiKey] = useState(storedApiKey || '');
   const [currentModel, setCurrentModel] = useState(storedModel || AVAILABLE_MODELS[0].id);
-  const [isTesting, setIsTesting] = useState(false);
-  const [testStatus, setTestStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [testMessage, setTestMessage] = useState<string | null>(null);
+  const [isTesting, setIsTesting] = useState(false); // For the main Save and Test button
+  const [testStatus, setTestStatus] = useState<'idle' | 'success' | 'error'>('idle'); // For the main Save and Test button
+  const [testMessage, setTestMessage] = useState<string | null>(null); // For the main Save and Test button
   const [showApiKey, setShowApiKey] = useState(false);
 
+  // New state for the separate "Test API Key" button
+  const [isTestingApiKey, setIsTestingApiKey] = useState(false);
+  const [testApiResult, setTestApiResult] = useState<{ success: boolean, message: string } | null>(null);
 
   // Update local state if store changes (e.g., after initial hydration)
   useEffect(() => {
@@ -116,7 +119,57 @@ const SettingsModelView: React.FC = () => {
               {showApiKey ? 'Hide' : 'Show'}
             </Button>
           </div>
-           <p className="text-xs text-muted-foreground">
+          {/* New "Test API Key" button and its feedback area */}
+          <div className="mt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                if (!currentApiKey.trim()) {
+                  setTestApiResult({ success: false, message: 'API Key cannot be empty to test.' });
+                  return;
+                }
+                setIsTestingApiKey(true);
+                setTestApiResult(null);
+                try {
+                  // Use a temporary client for this specific test
+                  const tempClient = initializeOpenAIClient(currentApiKey.trim()); // Assuming this returns a client or configures a global one
+                  await getChatCompletion({
+                    // client: tempClient, // If initializeOpenAIClient doesn't set a global default for getChatCompletion
+                    model: currentModel, // Test with currently selected model
+                    messages: [{ role: 'user', content: 'Test: Say Hello' }],
+                    max_tokens: 5,
+                  });
+                  setTestApiResult({ success: true, message: 'API Key is valid and working with the selected model.' });
+                } catch (error: any) {
+                  setTestApiResult({ success: false, message: error.message || 'Failed to verify API key.' });
+                } finally {
+                  setIsTestingApiKey(false);
+                  // Important: Re-initialize the main client with the *stored* API key from Zustand,
+                  // as the test might have used a different key.
+                  if (storedApiKey) {
+                    initializeOpenAIClient(storedApiKey);
+                  } else {
+                    // Or handle the case where no key was previously stored / clear the client
+                    console.warn("No stored API key to restore after test. AI service might be unconfigured if test key was invalid.");
+                  }
+                }
+              }}
+              disabled={isTestingApiKey || !currentApiKey.trim()}
+              className="w-full sm:w-auto"
+            >
+              {isTestingApiKey ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              {isTestingApiKey ? 'Test in progress...' : 'Test Current API Key'}
+            </Button>
+            {testApiResult && (
+              <p className={`text-sm mt-2 ${testApiResult.success ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                {testApiResult.message}
+              </p>
+            )}
+          </div>
+           <p className="text-xs text-muted-foreground mt-1"> {/* Adjusted margin after adding test button */}
             Your API key is stored locally and only used to communicate with the AI model provider.
           </p>
         </div>

@@ -27,6 +27,9 @@ export default defineConfig({
     icons: {
       '128': 'icon/128.png',
     },
+    content_security_policy: {
+      extension_pages: "script-src 'self' 'wasm-unsafe-eval' http://localhost:3001 http://localhost:3000; object-src 'self';"
+    },
     // Background script is usually defined by having an entrypoint file like background.ts
     // Content script is defined by having an entrypoint file like content.ts and its matches in WXT config
     // Side panel is defined by having an entrypoint file like sidepanel.html/tsx

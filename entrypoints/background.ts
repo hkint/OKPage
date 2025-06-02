@@ -68,6 +68,10 @@ export default defineBackground(async () => {
   // This function handles clicks from browser action or context menu.
   // It now checks the uiMode setting to decide which panel to open/toggle.
   const handleActionOrContextMenuClick = async (tabInput?: chrome.tabs.Tab) => {
+    const persistedZustandState = await loadSetting<{ state?: { uiMode?: 'sidepanel' | 'floating' } }>('okpage-app-storage', {});
+    const uiModeFromStorage = persistedZustandState?.state?.uiMode || 'sidepanel'; // Default to 'sidepanel'
+    console.log(`BACKGROUND: Action Clicked or Context Menu, uiMode from storage: ${uiModeFromStorage}`);
+
     let currentTab = tabInput;
     if (!currentTab || !currentTab.id) {
       const activeTabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -92,10 +96,10 @@ export default defineBackground(async () => {
     // Load uiMode from storage
     // Zustand persist saves the whole state object under the specified name.
     // The state object includes { state: { uiMode: '...' }, version: ... }
-    const persistedZustandState = await loadSetting<{ state?: { uiMode?: 'sidepanel' | 'floating' } }>('okpage-app-storage', {});
-    const uiMode = persistedZustandState?.state?.uiMode || 'sidepanel'; // Default to 'sidepanel'
+    // const persistedZustandState = await loadSetting<{ state?: { uiMode?: 'sidepanel' | 'floating' } }>('okpage-app-storage', {}); // Already loaded above
+    const uiMode = uiModeFromStorage; // Use the value loaded at the function start
 
-    console.log(`OKPage Background: Current UI Mode from storage: ${uiMode}`);
+    console.log(`OKPage Background: Current UI Mode for logic: ${uiMode}`);
 
     if (uiMode === 'sidepanel') {
       try {

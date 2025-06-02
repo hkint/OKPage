@@ -1,0 +1,13 @@
+/* Styles for the floating panel's HTML page */
+/* For example, to make the body and root fill the space if it's used in an iframe */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* If the panel itself handles scrolling */
+}
+
+/* You might want to ensure the background is transparent if it's an overlay on existing content */
+body {
+    background-color: transparent;
+}
